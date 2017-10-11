@@ -1,0 +1,138 @@
+/* nounified results */
+
+inverse_laplace_nounify_results : true;
+true;
+
+/* case A1 */
+
+inverse_laplace (u^(foo*bar - baz)/(u^foo + quux)^bar, u, t);
+inverse_laplace_result_A1 (t, foo, baz, bar, quux);
+
+/* case A2 */
+
+inverse_laplace (3/(v^2 + 9)*coth(%pi*v/6), v, u);
+3*inverse_laplace_result_A2 (u, 3);
+
+/* case A3 */
+
+inverse_laplace (log ((w^2 - %pi^2)/w^2), w, x);
+3*inverse_laplace_result_A3 (x, %pi);
+
+/* case A4 */
+
+inverse_laplace (log ((w^2 + %pi^2)/w^2), w, y);
+inverse_laplace_result_A4 (y, %pi);
+
+/* case A5 */
+
+(declare (m, integer),
+ inverse_laplace ((1 - h)^m/h^(m + 1/2), h, z));
+inverse_laplace_result_A5 (z, m);
+
+(remove (m, integer), 0);
+0;
+
+/* case A6 */
+
+inverse_laplace (1/sqrt (y^2 + %phi^2), y, a);
+inverse_laplace_result_A6 (a, %phi);
+
+/* case A7 */
+
+inverse_laplace (1/sqrt (y^2 - %phi^2), y, h);
+inverse_laplace_result_A7 (h, %phi);
+
+/* case A8 */
+
+inverse_laplace ((sqrt(v + 2*%gamma) - sqrt(v))/(sqrt(v + 2*%gamma) + sqrt(v)), v, w);
+inverse_laplace_result_A8 (w, %gamma);
+
+/* case A9 */
+
+inverse_laplace ((sqrt(r^2 + s^2) - r)^3/sqrt(r^2 + s^2), r, q);
+inverse_laplace_result_A9 (q, s, 3);
+
+/* case A10 */
+
+inverse_laplace ((sqrt(r^2 - s^2) + r)^3/sqrt(r^2 - s^2), r, q);
+inverse_laplace_result_A10 (q, s, 3);
+
+/* case A11 */
+
+inverse_laplace ((sqrt(d^2 + 7) - d)^5, d, e);
+inverse_laplace_result_A11 (e, sqrt(7), 5);
+
+/* case A12 */
+
+inverse_laplace (1/(p + sqrt(p^2 + %pi^2)), p, q);
+inverse_laplace_result_A12 (q, %pi);
+
+/* verbified results */
+
+inverse_laplace_nounify_results : false;
+false;
+
+/* case A1 */
+
+inverse_laplace (u^(foo*bar - baz)/(u^foo + quux)^bar, u, t);
+t^(baz - 1)*mittag_leffler_e[foo, baz, bar](-quux*t^foo);
+
+/* case A2 */
+
+inverse_laplace (3/(v^2 + 9)*coth(%pi*v/6), v, u);
+abs(sin(3*u));
+
+/* case A3 */
+
+inverse_laplace (log ((w^2 - %pi^2)/w^2), w, x);
+2/x*(1 - cosh(%pi*x));
+
+/* case A4 */
+
+inverse_laplace (log ((w^2 + %pi^2)/w^2), w, y);
+2/y*(1 - cos(%pi*y));
+
+/* case A5 */
+
+(declare (m, integer),
+ inverse_laplace ((1 - h)^m/h^(m + 1/2), h, z));
+m!/(2*m)!/sqrt(%pi*z)*hermite[2*m](sqrt(z));
+
+(remove (m, integer), 0);
+0;
+
+/* case A6 */
+
+inverse_laplace (1/sqrt (y^2 + %phi^2), y, a);
+bessel_j(0, %phi*a);
+
+/* case A7 */
+
+inverse_laplace (1/sqrt (y^2 - %phi^2), y, h);
+bessel_i(0, %phi*h);
+
+/* case A8 */
+
+inverse_laplace ((sqrt(v + 2*%gamma) - sqrt(v))/(sqrt(v + 2*%gamma) + sqrt(v)), v, w);
+1/w*exp(-%gamma*w)*bessel_i(1, %gamma*w);
+
+/* case A9 */
+
+inverse_laplace ((sqrt(r^2 + s^2) - r)^3/sqrt(r^2 + s^2), r, q);
+s^3*bessel_j(3, s*q);
+
+/* case A10 */
+
+inverse_laplace ((sqrt(r^2 - s^2) + r)^3/sqrt(r^2 - s^2), r, q);
+s^3*bessel_i(3, s*q);
+
+/* case A11 */
+
+inverse_laplace ((sqrt(d^2 + 7) - d)^5, d, e);
+5*sqrt(7)^5/e*bessel_j(5, sqrt(7)*e);
+
+/* case A12 */
+
+inverse_laplace (1/(p + sqrt(p^2 + %pi^2)), p, q);
+bessel_j(1, %pi*q)/(%pi*q);
+

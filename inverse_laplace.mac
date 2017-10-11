@@ -1,0 +1,158 @@
+/* inverse Laplace transform
+ * copyright 2017 by Robert Dodier
+ * I release this work under terms of the GNU General Public License.
+ *
+ * Items labeled A1, A2, A3, ... are taken from
+ * Table A.2 in "Laplace Transforms Involving Fractional and Irrational Operations".
+ * Cases are not numbered in that document; assume numbering going by columns on a page, and then pages.
+ * http://???/LaplaceTransformTable_long.pdf
+ */
+
+inverse_laplace (e, %s, %t) :=
+  block ([e1 : 'inverse_laplace (e, %s, %t),
+          ee, a, alpha, beta, gamma, aa, kk1, a2, n, nu, k],
+         apply1 (e1, inverse_laplace_rule_A1, inverse_laplace_rule_A2, inverse_laplace_rule_A3, inverse_laplace_rule_A4,
+                 inverse_laplace_rule_A5, inverse_laplace_rule_A6, inverse_laplace_rule_A7, inverse_laplace_rule_A8,
+                 inverse_laplace_rule_A9, inverse_laplace_rule_A10, inverse_laplace_rule_A11, inverse_laplace_rule_A12));
+
+inverse_laplace_nounify_results : false;
+prefix ("FOO");
+FOO f ::= if inverse_laplace_nounify_results then nounify(f) else verbify(f);
+
+/* case A1 */
+
+matchdeclare (ee, lambda ([e], inverse_laplace_match_A1 (e, %s) # false));
+defrule (inverse_laplace_rule_A1, 'inverse_laplace (ee, %s, %t), (FOO inverse_laplace_result_A1) (%t, alpha, beta, gamma, a));
+
+inverse_laplace_match_A1 (e, %s) := 
+  if not atom(e) and op(e) = "/"
+    then if inverse_laplace_match_A1b (denom(e), %s) # false
+           then if inverse_laplace_match_A1a (num(e), %s, alpha, gamma) # false
+             then ['a = a, 'alpha = alpha, 'beta = beta, 'gamma = gamma] $
+
+matchdeclare ([a, alpha, beta, gamma], freeof(%s)) $
+defmatch (inverse_laplace_match_A1a, %s^(alpha*gamma - beta), %s, alpha, gamma);
+defmatch (inverse_laplace_match_A1b, (%s^alpha + a)^gamma, %s);
+
+inverse_laplace_result_A1 (t, alpha, beta, gamma, a) :=
+  t^(beta - 1)*mittag_leffler_e[alpha, beta, gamma](-a*t^alpha);
+
+/* case A2 */
+
+matchdeclare (ee, lambda ([e], inverse_laplace_match_A2 (e, %s) # false));
+defrule (inverse_laplace_rule_A2, 'inverse_laplace (ee, %s, %t), (FOO inverse_laplace_result_A2) (%t, kk));
+
+inverse_laplace_match_A2 (e, %s) :=
+  if inverse_laplace_match_A2a (e, %s) # false
+    then block ([kk0 : %pi/(2*kk1)], if equal (aa, 1/(kk0^2 + %s^2)) then (kk:kk0,['kk = kk]));
+
+matchdeclare (aa, lambda ([e], not freeof (%s, e)), kk1, freeof (%s));
+defmatch (inverse_laplace_match_A2a, aa*coth(%s*kk1), %s);
+
+/* constant factor k gets moved outside inverse_laplace, so cancel it here */
+inverse_laplace_result_A2 (t, k) := (1/k)*abs(sin(k*t));
+
+/* case A3 */
+
+matchdeclare (ee, lambda ([e], inverse_laplace_match_A3 (e, %s) # false));
+defrule (inverse_laplace_rule_A3, 'inverse_laplace (ee, %s, %t), (FOO inverse_laplace_result_A3) (%t, sqrt(a2)));
+
+matchdeclare (a2, lambda ([e], freeof (%s, e) and sign(e) = 'pos));
+defmatch (inverse_laplace_match_A3, log ((%s^2 - a2)/%s^2), %s);
+
+inverse_laplace_result_A3 (t, a) := 2/t*(1 - cosh(a*t));
+
+/* case A4 */
+
+matchdeclare (ee, lambda ([e], inverse_laplace_match_A4 (e, %s) # false));
+defrule (inverse_laplace_rule_A4, 'inverse_laplace (ee, %s, %t), (FOO inverse_laplace_result_A4) (%t, sqrt(a2)));
+
+matchdeclare (a2, lambda ([e], freeof (%s, e) and sign(e) = 'pos));
+defmatch (inverse_laplace_match_A4, log ((%s^2 + a2)/%s^2), %s);
+
+inverse_laplace_result_A4 (t, a) := 2/t*(1 - cos(a*t));
+
+/* case A5 */
+
+matchdeclare (ee, lambda ([e], inverse_laplace_match_A5 (e, %s) # false));
+defrule (inverse_laplace_rule_A5, 'inverse_laplace (ee, %s, %t), (FOO inverse_laplace_result_A5) (%t, n));
+
+matchdeclare (n, lambda ([e], featurep (e, integer)));
+defmatch (inverse_laplace_match_A5, (1 - %s)^n/s^(n + 1/2), %s);
+
+inverse_laplace_result_A5 (t, n) := n!/(2*n)!/sqrt(%pi*t)*hermite(2*n, sqrt(t));
+
+/* case A6 */
+
+matchdeclare (ee, lambda ([e], inverse_laplace_match_A6 (e, %s) # false));
+defrule (inverse_laplace_rule_A6, 'inverse_laplace (ee, %s, %t), (FOO inverse_laplace_result_A6) (%t, sqrt(a2)));
+
+matchdeclare (a2, lambda ([e], freeof (%s, e) and sign(e) = 'pos));
+defmatch (inverse_laplace_match_A6, 1/sqrt(%s^2 + a2), %s);
+
+inverse_laplace_result_A6 (t, a) := bessel_j (0, a*t);
+
+/* case A7 */
+
+matchdeclare (ee, lambda ([e], inverse_laplace_match_A7 (e, %s) # false));
+defrule (inverse_laplace_rule_A7, 'inverse_laplace (ee, %s, %t), (FOO inverse_laplace_result_A7) (%t, sqrt(a2)));
+
+matchdeclare (a2, lambda ([e], freeof (%s, e) and sign(e) = 'pos));
+defmatch (inverse_laplace_match_A7, 1/sqrt(%s^2 - a2), %s);
+
+inverse_laplace_result_A7 (t, a) := bessel_i (0, a*t);
+
+/* case A8 */
+
+matchdeclare (ee, lambda ([e], inverse_laplace_match_A8 (e, %s) # false));
+defrule (inverse_laplace_rule_A8, 'inverse_laplace (ee, %s, %t), (FOO inverse_laplace_result_A8) (%t, a2/2));
+
+matchdeclare (a2, freeof (%s));
+defmatch (inverse_laplace_match_A8, (sqrt(%s + a2) - sqrt(%s))/(sqrt(%s + a2) + sqrt(%s)), %s);
+
+inverse_laplace_result_A8 (t, a) := 1/t*exp(-a*t)*bessel_i(1, a*t);
+
+/* case A9 */
+
+matchdeclare (ee, lambda ([e], inverse_laplace_match_A9 (e, %s) # false));
+defrule (inverse_laplace_rule_A9, 'inverse_laplace (ee, %s, %t), (FOO inverse_laplace_result_A9) (%t, sqrt(a2), nu));
+
+matchdeclare (a2, lambda ([e], freeof (%s, e) and sign(e) = 'pos), nu, lambda ([e], featurep (e, integer) and e > -1));
+defmatch (inverse_laplace_match_A9, (sqrt(%s^2 + a2) - %s)^nu/sqrt(%s^2 + a2), %s);
+
+inverse_laplace_result_A9 (t, a, nu) := a^nu*bessel_j(nu, a*t);
+
+/* case A10 */
+
+matchdeclare (ee, lambda ([e], inverse_laplace_match_A10 (e, %s) # false));
+defrule (inverse_laplace_rule_A10, 'inverse_laplace (ee, %s, %t), (FOO inverse_laplace_result_A10) (%t, sqrt(a2), nu));
+
+matchdeclare (a2, lambda ([e], freeof (%s, e) and sign(e) = 'pos), nu, lambda ([e], featurep (e, integer) and e > -1));
+defmatch (inverse_laplace_match_A10, (sqrt(%s^2 - a2) - %s)^nu/sqrt(%s^2 - a2), %s);
+
+inverse_laplace_result_A10 (t, a, nu) := a^nu*bessel_i(nu, a*t);
+
+/* case A11 */
+
+matchdeclare (ee, lambda ([e], inverse_laplace_match_A11 (e, %s) # false));
+defrule (inverse_laplace_rule_A11, 'inverse_laplace (ee, %s, %t), (FOO inverse_laplace_result_A11) (%t, sqrt(a2), k));
+
+matchdeclare (a2, lambda ([e], freeof (%s, e) and sign(e) = 'pos), k, lambda ([e], featurep (e, integer) and e > 0));
+defmatch (inverse_laplace_match_A11, (sqrt(%s^2 + a2) - %s)^k, %s);
+
+inverse_laplace_result_A11 (t, a, k) := k*a^k/t*bessel_j(k, a*t);
+
+/* case A12 */
+
+matchdeclare (ee, lambda ([e], inverse_laplace_match_A12 (e, %s) # false));
+defrule (inverse_laplace_rule_A12, 'inverse_laplace (ee, %s, %t), (FOO inverse_laplace_result_A12) (%t, sqrt(a2)));
+
+matchdeclare (a2, lambda ([e], freeof (%s, e) and sign(e) = 'pos));
+defmatch (inverse_laplace_match_A12, 1/(%s + sqrt(%s^2 + a2)), %s);
+
+inverse_laplace_result_A12 (t, a) := (bessel_j (1, a*t))/(a*t);
+
+/* declarations */
+
+declare (nounify (inverse_laplace), linear);
+
