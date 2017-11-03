@@ -1,3 +1,6 @@
+(myctxt : newcontext (), 0);
+0;
+
 /* nounified results */
 
 inverse_laplace_nounify_results : true;
@@ -49,13 +52,16 @@ inverse_laplace_result_A8 (w, %gamma);
 
 /* case A9 */
 
-inverse_laplace ((sqrt(r^2 + s^2) - r)^3/sqrt(r^2 + s^2), r, q);
+(assume (s > 0), inverse_laplace ((sqrt(r^2 + s^2) - r)^3/sqrt(r^2 + s^2), r, q));
 inverse_laplace_result_A9 (q, s, 3);
 
 /* case A10 */
 
-inverse_laplace ((sqrt(r^2 - s^2) + r)^3/sqrt(r^2 - s^2), r, q);
+inverse_laplace ((sqrt(r^2 - s^2) - r)^3/sqrt(r^2 - s^2), r, q);
 inverse_laplace_result_A10 (q, s, 3);
+
+(forget (s > 0), 0);
+0;
 
 /* case A11 */
 
@@ -118,13 +124,16 @@ inverse_laplace ((sqrt(v + 2*%gamma) - sqrt(v))/(sqrt(v + 2*%gamma) + sqrt(v)), 
 
 /* case A9 */
 
-inverse_laplace ((sqrt(r^2 + s^2) - r)^3/sqrt(r^2 + s^2), r, q);
+(assume (s > 0), inverse_laplace ((sqrt(r^2 + s^2) - r)^3/sqrt(r^2 + s^2), r, q));
 s^3*bessel_j(3, s*q);
 
 /* case A10 */
 
-inverse_laplace ((sqrt(r^2 - s^2) + r)^3/sqrt(r^2 - s^2), r, q);
+inverse_laplace ((sqrt(r^2 - s^2) - r)^3/sqrt(r^2 - s^2), r, q);
 s^3*bessel_i(3, s*q);
+
+(forget (s > 0), 0);
+0;
 
 /* case A11 */
 
@@ -135,4 +144,7 @@ inverse_laplace ((sqrt(d^2 + 7) - d)^5, d, e);
 
 inverse_laplace (1/(p + sqrt(p^2 + %pi^2)), p, q);
 bessel_j(1, %pi*q)/(%pi*q);
+
+killcontext (myctxt);
+done;
 
