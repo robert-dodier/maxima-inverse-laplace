@@ -78,7 +78,7 @@ matchdeclare (ee, lambda ([e], inverse_laplace_match_A5 (e, %s) # false));
 defrule (inverse_laplace_rule_A5, 'inverse_laplace (ee, %s, %t), (FOO inverse_laplace_result_A5) (%t, n));
 
 matchdeclare (n, lambda ([e], featurep (e, integer)));
-defmatch (inverse_laplace_match_A5, (1 - %s)^n/s^(n + 1/2), %s);
+defmatch (inverse_laplace_match_A5, (1 - %s)^n/%s^(n + 1/2), %s);
 
 inverse_laplace_result_A5 (t, n) := n!/(2*n)!/sqrt(%pi*t)*hermite(2*n, sqrt(t));
 
